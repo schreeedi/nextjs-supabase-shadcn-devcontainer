@@ -22,7 +22,7 @@ api_url = "http://127.0.0.1:54321"
 
 # Local mail testing — OAuth doesn't need this, but magic links /
 # email confirmations land here instead of real inboxes.
-[inbucket]
+[local_smtp]
 enabled = true
 port = 54324
 

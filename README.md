@@ -74,7 +74,7 @@ http://localhost:54321/auth/v1/callback
 Both providers are already enabled in `supabase/config.toml`. Restart the stack after editing `.env`:
 
 ```bash
-supabase stop && supabase start
+npx supabase stop && npx supabase start
 ```
 
 > **Tip:** You can register both the local (`http://localhost:54321/...`) and production (`https://<project>.supabase.co/...`) redirect URIs in the _same_ Google/Azure app — no need for separate apps.
@@ -91,8 +91,8 @@ npm run db:start      # supabase start  — boot the Docker stack
 npm run db:stop       # supabase stop   — stop containers (data persists)
 npm run db:reset      # wipe DB + re-run migrations + seed
 npm run db:status     # show URLs + keys
-supabase db diff      # generate migration from Studio changes
-supabase gen types typescript --local > lib/database.types.ts
+npx supabase db diff  # generate migration from Studio changes
+npx supabase gen types typescript --local > lib/database.types.ts
 ```
 
 ## Migrations
@@ -110,7 +110,7 @@ SQL files in `supabase/migrations/` run automatically on `supabase start` / `db 
 ```
 .devcontainer/
   devcontainer.json          # Node 24 + docker-in-docker + port forwards
-  post-create.sh             # npm install + Supabase CLI install
+  post-create.sh             # npm install (incl. Supabase CLI as dev dependency)
   post-start.sh              # auto-starts the Supabase stack
 supabase/
   config.toml                # Local stack config incl. Google/Azure OAuth
@@ -131,7 +131,7 @@ lib/                         # Utilities + Vitest unit tests
 
 ## Switching to hosted Supabase (production)
 
-1. `supabase link --project-ref <your-project-ref>`
-2. `supabase db push` — applies your migrations to the hosted DB
+1. `npx supabase link --project-ref <your-project-ref>`
+2. `npx supabase db push` — applies your migrations to the hosted DB
 3. Set the production values in your deployment env (see comments in `.env.local.example`)
 4. Configure Google/Azure in the Supabase Dashboard with the hosted callback URL
