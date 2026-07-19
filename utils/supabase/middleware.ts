@@ -33,15 +33,12 @@ export async function updateSession(request: NextRequest) {
   // Protect everything under /app
   if (!user && request.nextUrl.pathname.startsWith("/app")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
   // Redirect logged-in users away from the login/signup pages
-  if (
-    user &&
-    ["/auth/login", "/auth/signup"].includes(request.nextUrl.pathname)
-  ) {
+  if (user && ["/login", "/signup"].includes(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/app/dashboard";
     return NextResponse.redirect(url);

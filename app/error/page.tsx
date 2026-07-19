@@ -25,7 +25,7 @@ export default function ErrorPage() {
         </CardHeader>
         <CardContent>
           <Button asChild className="w-full">
-            <Link href="/auth/login">Try again</Link>
+            <Link href="/login">Try again</Link>
           </Button>
         </CardContent>
       </Card>

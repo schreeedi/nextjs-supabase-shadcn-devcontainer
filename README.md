@@ -116,8 +116,8 @@ supabase/
   config.toml                # Local stack config incl. Google/Facebook OAuth
   migrations/                # SQL migrations (auto-applied)
 app/
-  auth/login/page.tsx        # Login page (Google + Facebook OAuth)
-  auth/signup/page.tsx       # Signup page (same providers, own copy)
+  (auth)/login/page.tsx      # /login page (Google + Facebook OAuth)
+  (auth)/signup/page.tsx     # /signup page (same providers, own copy)
   auth/callback/route.ts     # OAuth code exchange
   auth/logout/route.ts
   app/dashboard/page.tsx     # Protected page (everything under /app requires login)

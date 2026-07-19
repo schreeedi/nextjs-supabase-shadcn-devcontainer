@@ -18,7 +18,7 @@ export default async function LoginPage() {
       alternate={{
         prompt: "Don't have an account?",
         label: "Sign up",
-        href: "/auth/signup",
+        href: "/signup",
       }}
     />
   );

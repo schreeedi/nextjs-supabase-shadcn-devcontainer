@@ -24,10 +24,10 @@ export function SiteHeader({
             showAuthLinks && (
               <>
                 <Button variant="ghost" asChild>
-                  <Link href="/auth/login">Log in</Link>
+                  <Link href="/login">Log in</Link>
                 </Button>
                 <Button asChild>
-                  <Link href="/auth/signup">Sign up</Link>
+                  <Link href="/signup">Sign up</Link>
                 </Button>
               </>
             )

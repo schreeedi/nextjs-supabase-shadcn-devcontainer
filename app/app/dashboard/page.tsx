@@ -19,7 +19,7 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/auth/login");
+  if (!user) redirect("/login");
 
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
   const fullName = user.user_metadata?.full_name as string | undefined;
