@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,8 +32,6 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) redirect("/dashboard");
-
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
@@ -44,12 +41,20 @@ export default async function Home() {
             My App
           </Link>
           <nav className="flex items-center gap-2">
-            <Button variant="ghost" asChild>
-              <Link href="/auth/login">Log in</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/auth/login">Sign up</Link>
-            </Button>
+            {user ? (
+              <Button asChild>
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/auth/login">Log in</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/auth/login">Sign up</Link>
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -65,12 +70,20 @@ export default async function Home() {
             seconds — no setup, no passwords.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button size="lg" asChild>
-              <Link href="/auth/login">Get started for free</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/auth/login">Log in</Link>
-            </Button>
+            {user ? (
+              <Button size="lg" asChild>
+                <Link href="/dashboard">Go to dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button size="lg" asChild>
+                  <Link href="/auth/login">Get started for free</Link>
+                </Button>
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/auth/login">Log in</Link>
+                </Button>
+              </>
+            )}
           </div>
         </section>
 
