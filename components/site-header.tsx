@@ -27,7 +27,7 @@ export function SiteHeader({
                   <Link href="/auth/login">Log in</Link>
                 </Button>
                 <Button asChild>
-                  <Link href="/auth/login">Sign up</Link>
+                  <Link href="/auth/signup">Sign up</Link>
                 </Button>
               </>
             )

@@ -37,8 +37,11 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect logged-in users away from /auth/login
-  if (user && request.nextUrl.pathname === "/auth/login") {
+  // Redirect logged-in users away from the login/signup pages
+  if (
+    user &&
+    ["/auth/login", "/auth/signup"].includes(request.nextUrl.pathname)
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

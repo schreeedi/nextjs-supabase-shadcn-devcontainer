@@ -57,7 +57,7 @@ export default async function Home() {
             ) : (
               <>
                 <Button size="lg" asChild>
-                  <Link href="/auth/login">Get started for free</Link>
+                  <Link href="/auth/signup">Get started for free</Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
                   <Link href="/auth/login">Log in</Link>
