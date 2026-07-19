@@ -102,14 +102,7 @@ export default async function LoginPage() {
               </Button>
             </form>
 
-
-            <div className="hidden items-center gap-3">
-              <Separator className="flex-1" />
-              <span className="text-xs text-muted-foreground">or</span>
-              <Separator className="flex-1" />
-            </div>
-
-            <p className="text-center text-xs text-muted-foreground">
+            <p className="pt-2 text-center text-xs text-muted-foreground">
               By signing in you agree to our{" "}
               <a
                 href="#"

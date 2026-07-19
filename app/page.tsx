@@ -24,7 +24,7 @@ const features = [
   {
     title: "Fast and modern",
     description:
-      "Built on Next.js 15 with server rendering for a snappy experience on every device.",
+      "Built on Next.js 16 with server rendering for a snappy experience on every device.",
   },
 ];
 
