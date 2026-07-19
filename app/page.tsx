@@ -52,7 +52,7 @@ export default async function Home() {
           <div className="flex flex-col gap-3 sm:flex-row">
             {user ? (
               <Button size="lg" asChild>
-                <Link href="/dashboard">Go to dashboard</Link>
+                <Link href="/app/dashboard">Go to dashboard</Link>
               </Button>
             ) : (
               <>

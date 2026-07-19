@@ -120,7 +120,7 @@ app/
   auth/signup/page.tsx       # Signup page (same providers, own copy)
   auth/callback/route.ts     # OAuth code exchange
   auth/logout/route.ts
-  dashboard/page.tsx         # Protected page
+  app/dashboard/page.tsx     # Protected page (everything under /app requires login)
   globals.css                # Tailwind v4 CSS-first config + Shadcn theme
 proxy.ts                     # Session refresh + route guard (Next 16 middleware)
 utils/supabase/              # SSR-safe browser/server clients
