@@ -48,8 +48,10 @@ export default async function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-sm shadow-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
-          <CardDescription>Sign in to your account to continue</CardDescription>
+          <CardTitle className="text-2xl">Welcome</CardTitle>
+          <CardDescription>
+            Sign in or create an account to continue
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -104,11 +106,17 @@ export default async function LoginPage() {
 
           <p className="text-center text-xs text-muted-foreground">
             By signing in you agree to our{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-primary">
+            <a
+              href="#"
+              className="underline underline-offset-4 hover:text-primary"
+            >
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-primary">
+            <a
+              href="#"
+              className="underline underline-offset-4 hover:text-primary"
+            >
               Privacy Policy
             </a>
             .

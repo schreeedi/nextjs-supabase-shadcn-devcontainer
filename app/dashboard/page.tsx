@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { getInitials, getProviderLabel } from "@/lib/user";
 import { LogOut, User, Mail, Shield } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -25,21 +26,8 @@ export default async function DashboardPage() {
   const email = user.email ?? "";
   const provider = user.app_metadata?.provider ?? "unknown";
 
-  const initials = fullName
-    ? fullName
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : email.slice(0, 2).toUpperCase();
-
-  const providerLabel =
-    provider === "google"
-      ? "Google"
-      : provider === "azure"
-        ? "Microsoft"
-        : provider;
+  const initials = getInitials(fullName, email);
+  const providerLabel = getProviderLabel(provider);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-muted/30 p-4">
@@ -60,9 +48,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Your profile</CardTitle>
-            <CardDescription>
-              Signed in via {providerLabel}
-            </CardDescription>
+            <CardDescription>Signed in via {providerLabel}</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -75,9 +61,7 @@ export default async function DashboardPage() {
                 <AvatarFallback className="text-lg">{initials}</AvatarFallback>
               </Avatar>
               <div>
-                {fullName && (
-                  <p className="text-lg font-medium">{fullName}</p>
-                )}
+                {fullName && <p className="text-lg font-medium">{fullName}</p>}
                 <p className="text-sm text-muted-foreground">{email}</p>
               </div>
             </div>
@@ -121,7 +105,7 @@ export default async function DashboardPage() {
               Authentication is working. Build your app from here.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
+          <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>✅ Supabase SSR client configured</p>
             <p>✅ Google OAuth connected</p>
             <p>✅ Microsoft (Azure) OAuth connected</p>

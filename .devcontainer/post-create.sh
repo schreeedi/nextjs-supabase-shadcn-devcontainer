@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+echo "── Setting claude permissions ───────────────────────────"
+sudo chown -R node:node /home/node/.claude
+
 echo "── Installing npm dependencies ──────────────────────────"
 npm install
 
@@ -8,7 +11,10 @@ echo "── Installing Supabase CLI ──────────────�
 if ! command -v supabase &> /dev/null; then
   # Install via official binary (recommended over npm global install)
   ARCH=$(dpkg --print-architecture) # amd64 or arm64
-  curl -fsSL "https://github.com/supabase/cli/releases/latest/download/supabase_linux_${ARCH}.deb" \
+  # Release assets are versioned (no "latest" alias), so resolve the tag first
+  VERSION=$(curl -fsSL https://api.github.com/repos/supabase/cli/releases/latest \
+    | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
+  curl -fsSL "https://github.com/supabase/cli/releases/download/v${VERSION}/supabase_${VERSION}_linux_${ARCH}.deb" \
     -o /tmp/supabase.deb
   sudo dpkg -i /tmp/supabase.deb
   rm /tmp/supabase.deb
@@ -23,10 +29,11 @@ fi
 
 echo ""
 echo "════════════════════════════════════════════════════════"
-echo "  Setup complete. Next steps:"
+echo "  Setup complete."
 echo ""
-echo "    supabase start     # start local Supabase stack"
-echo "    npm run dev        # start Next.js"
+echo "  Supabase and Next.js start automatically on each"
+echo "  container start (dev server logs: /tmp/next-dev.log)."
 echo ""
+echo "  App:        http://localhost:3000"
 echo "  Studio UI:  http://localhost:54323"
 echo "════════════════════════════════════════════════════════"
