@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import {
   Card,
   CardDescription,
@@ -12,7 +14,7 @@ const features = [
   {
     title: "Secure authentication",
     description:
-      "Sign in with Google or Microsoft — no passwords to remember, backed by Supabase Auth.",
+      "Sign in with Google or Facebook — no passwords to remember, backed by Supabase Auth.",
   },
   {
     title: "Personal dashboard",
@@ -35,29 +37,7 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="border-b">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-          <Link href="/" className="text-lg font-semibold tracking-tight">
-            My App
-          </Link>
-          <nav className="flex items-center gap-2">
-            {user ? (
-              <Button asChild>
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
-            ) : (
-              <>
-                <Button variant="ghost" asChild>
-                  <Link href="/auth/login">Log in</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/auth/login">Sign up</Link>
-                </Button>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
+      <SiteHeader user={user} />
 
       {/* Hero */}
       <main className="flex-1">
@@ -66,7 +46,7 @@ export default async function Home() {
             Your work, all in one place
           </h1>
           <p className="max-w-xl text-lg text-muted-foreground">
-            Sign in with your Google or Microsoft account and get started in
+            Sign in with your Google or Facebook account and get started in
             seconds — no setup, no passwords.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -103,19 +83,7 @@ export default async function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} My App. All rights reserved.</p>
-          <div className="flex gap-4">
-            <a href="#" className="hover:text-foreground">
-              Terms
-            </a>
-            <a href="#" className="hover:text-foreground">
-              Privacy
-            </a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

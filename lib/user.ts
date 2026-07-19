@@ -3,7 +3,7 @@
 
 const PROVIDER_LABELS: Record<string, string> = {
   google: "Google",
-  azure: "Microsoft",
+  facebook: "Facebook",
 };
 
 /** Human-friendly label for an auth provider id (falls back to the raw id). */

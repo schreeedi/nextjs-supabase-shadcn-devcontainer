@@ -4,7 +4,7 @@ import { getInitials, getProviderLabel } from "@/lib/user";
 describe("getProviderLabel", () => {
   it("maps known provider ids to friendly labels", () => {
     expect(getProviderLabel("google")).toBe("Google");
-    expect(getProviderLabel("azure")).toBe("Microsoft");
+    expect(getProviderLabel("facebook")).toBe("Facebook");
   });
 
   it("falls back to the raw id for unknown providers", () => {

@@ -51,15 +51,13 @@ secret = "env(SUPABASE_AUTH_GOOGLE_SECRET)"
 # Local callback — register this in Google Cloud Console:
 redirect_uri = "http://localhost:54321/auth/v1/callback"
 
-# ── Microsoft (Azure) OAuth ──────────────────────────────────
+# ── Facebook OAuth ───────────────────────────────────────────
 # Set env vars in .env:
-#   SUPABASE_AUTH_AZURE_CLIENT_ID
-#   SUPABASE_AUTH_AZURE_SECRET
-[auth.external.azure]
+#   SUPABASE_AUTH_FACEBOOK_CLIENT_ID
+#   SUPABASE_AUTH_FACEBOOK_SECRET
+[auth.external.facebook]
 enabled = true
-client_id = "env(SUPABASE_AUTH_AZURE_CLIENT_ID)"
-secret = "env(SUPABASE_AUTH_AZURE_SECRET)"
-# Register in Azure App Registration as Web redirect URI:
+client_id = "env(SUPABASE_AUTH_FACEBOOK_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_FACEBOOK_SECRET)"
+# Register in Meta for Developers as a Valid OAuth Redirect URI:
 redirect_uri = "http://localhost:54321/auth/v1/callback"
-# Optional: restrict to your tenant, otherwise "common" allows any account
-url = "https://login.microsoftonline.com/common"

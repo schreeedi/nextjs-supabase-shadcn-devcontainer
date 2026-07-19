@@ -108,7 +108,7 @@ export default async function DashboardPage() {
           <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>✅ Supabase SSR client configured</p>
             <p>✅ Google OAuth connected</p>
-            <p>✅ Microsoft (Azure) OAuth connected</p>
+            <p>✅ Facebook OAuth connected</p>
             <p>✅ Protected routes via middleware</p>
             <p>✅ Shadcn UI components ready</p>
           </CardContent>

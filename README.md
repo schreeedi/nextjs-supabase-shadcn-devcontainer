@@ -3,7 +3,7 @@
 A ready-to-run Next.js 16 app with a **fully local Supabase stack running in Docker**:
 
 - **Supabase local stack** (Postgres, Auth, PostgREST, Storage, Studio) via Supabase CLI
-- **Google OAuth** + **Microsoft (Azure) OAuth** login
+- **Google OAuth** + **Facebook OAuth** login
 - **Shadcn UI** + Tailwind CSS v4
 - **Vitest** unit tests + ESLint (flat config) + Prettier, wired up in CI
 - Devcontainer with **docker-in-docker**
@@ -24,7 +24,7 @@ No — not one you write yourself. The **Supabase CLI** (`supabase start`) orche
 #     post-start boots the Supabase Docker stack automatically)
 
 # 2. Configure OAuth secrets for the local stack
-cp .env.example .env          # fill in Google/Azure client IDs + secrets
+cp .env.example .env          # fill in Google/Facebook client IDs + secrets
 
 # 3. Start Next.js
 npm run dev
@@ -60,15 +60,15 @@ http://localhost:54321/auth/v1/callback
    SUPABASE_AUTH_GOOGLE_SECRET=...
    ```
 
-### Microsoft (Azure)
+### Facebook
 
-1. [Azure Portal](https://portal.azure.com) → App registrations → New registration.
-2. Redirect URI (Web): `http://localhost:54321/auth/v1/callback`
-3. Certificates & secrets → New client secret.
+1. [Meta for Developers](https://developers.facebook.com) → Create App → add the **Facebook Login** product.
+2. Facebook Login → Settings → Valid OAuth Redirect URIs: `http://localhost:54321/auth/v1/callback`
+3. App settings → Basic → copy **App ID** and **App Secret**.
 4. Put values in `.env`:
    ```env
-   SUPABASE_AUTH_AZURE_CLIENT_ID=...
-   SUPABASE_AUTH_AZURE_SECRET=...
+   SUPABASE_AUTH_FACEBOOK_CLIENT_ID=...
+   SUPABASE_AUTH_FACEBOOK_SECRET=...
    ```
 
 Both providers are already enabled in `supabase/config.toml`. Restart the stack after editing `.env`:
@@ -77,7 +77,7 @@ Both providers are already enabled in `supabase/config.toml`. Restart the stack 
 npx supabase stop && npx supabase start
 ```
 
-> **Tip:** You can register both the local (`http://localhost:54321/...`) and production (`https://<project>.supabase.co/...`) redirect URIs in the _same_ Google/Azure app — no need for separate apps.
+> **Tip:** You can register both the local (`http://localhost:54321/...`) and production (`https://<project>.supabase.co/...`) redirect URIs in the _same_ Google/Facebook app — no need for separate apps.
 
 ---
 
@@ -101,7 +101,7 @@ SQL files in `supabase/migrations/` run automatically on `supabase start` / `db 
 
 - `public.profiles` table linked to `auth.users`
 - RLS policies (users read/update only their own row)
-- Trigger that auto-creates a profile on signup (incl. OAuth — pulls `full_name` and `avatar_url` from Google/Microsoft metadata)
+- Trigger that auto-creates a profile on signup (incl. OAuth — pulls `full_name` and `avatar_url` from Google/Facebook metadata)
 
 ---
 
@@ -113,10 +113,10 @@ SQL files in `supabase/migrations/` run automatically on `supabase start` / `db 
   post-create.sh             # npm install (incl. Supabase CLI as dev dependency)
   post-start.sh              # auto-starts the Supabase stack
 supabase/
-  config.toml                # Local stack config incl. Google/Azure OAuth
+  config.toml                # Local stack config incl. Google/Facebook OAuth
   migrations/                # SQL migrations (auto-applied)
 app/
-  auth/login/page.tsx        # Google + Microsoft login buttons
+  auth/login/page.tsx        # Google + Facebook login buttons
   auth/callback/route.ts     # OAuth code exchange
   auth/logout/route.ts
   dashboard/page.tsx         # Protected page
@@ -134,4 +134,4 @@ lib/                         # Utilities + Vitest unit tests
 1. `npx supabase link --project-ref <your-project-ref>`
 2. `npx supabase db push` — applies your migrations to the hosted DB
 3. Set the production values in your deployment env (see comments in `.env.local.example`)
-4. Configure Google/Azure in the Supabase Dashboard with the hosted callback URL
+4. Configure Google/Facebook in the Supabase Dashboard with the hosted callback URL
