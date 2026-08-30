@@ -1,7 +1,6 @@
 {
   "name": "Next.js + Supabase (local) + Shadcn",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:24-bookworm",
-  "runArgs": ["--name", "nextjs-supabase-devcontainer"],
 
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
