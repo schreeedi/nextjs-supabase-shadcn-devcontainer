@@ -51,7 +51,10 @@ create policy "Users can view own jobs"
   to authenticated
   using ((select auth.uid()) = user_id);
 
-revoke insert, update, delete on public.jobs from anon, authenticated;
+-- TRUNCATE is not subject to RLS; PostgREST can't issue it, but nothing else
+-- should be able to either.
+revoke insert, update, delete, truncate, references, trigger
+  on public.jobs from anon, authenticated;
 
 -- ── enqueue ───────────────────────────────────────────────────────────
 

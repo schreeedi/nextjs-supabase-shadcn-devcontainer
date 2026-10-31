@@ -30,9 +30,16 @@ create policy "Users can update own profile"
   using ((select auth.uid()) = id)
   with check ((select auth.uid()) = id);
 
--- Users may edit their display data, not the row identity, the email (mirrored
--- from auth.users) or the timestamps.
-revoke update on public.profiles from anon, authenticated;
+-- Grants are a lock of their own, not "covered by RLS": Supabase grants the API
+-- roles INSERT/UPDATE/DELETE/TRUNCATE by default, and a missing policy is the
+-- only thing in the way — until someone adds "users can insert own profile"
+-- and a user creates a row with plan = 'business'.
+-- Rows come from handle_new_user and go with auth.users (cascade). Users may
+-- edit their display data, not the row identity, the email (mirrored from
+-- auth.users), the plan or the timestamps.
+-- Guarded by supabase/tests/database/privileges.test.sql.
+revoke insert, update, delete, truncate, references, trigger
+  on public.profiles from anon, authenticated;
 grant update (full_name, avatar_url) on public.profiles to authenticated;
 
 -- ── Plans: database backstop for lib/plan-features.ts ──────────────────
@@ -49,11 +56,14 @@ as $$
 $$;
 
 -- Plan of the signed-in user ≥ p_min? No profile / anon → like Free.
+-- security invoker: the "view own profile" policy lets a user read exactly the
+-- row this reads — a definer function in an exposed schema would be callable
+-- via /rest/v1/rpc with elevated rights for nothing (database linter 0029).
 create or replace function public.plan_at_least(p_min text)
 returns boolean
 language sql
 stable
-security definer
+security invoker
 set search_path = ''
 as $$
   select public.plan_rank(coalesce(
@@ -107,3 +117,26 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+-- profiles.email mirrors auth.users.email — keep it current on email changes
+-- (handle_new_user only copies it on insert).
+create or replace function public.handle_user_email_change()
+returns trigger
+language plpgsql
+security definer set search_path = ''
+as $$
+begin
+  update public.profiles set email = new.email where id = new.id;
+  return new;
+end;
+$$;
+
+-- Trigger function only — not callable through the API
+revoke execute on function public.handle_user_email_change() from public, anon, authenticated;
+
+drop trigger if exists on_auth_user_email_changed on auth.users;
+create trigger on_auth_user_email_changed
+  after update of email on auth.users
+  for each row
+  when (old.email is distinct from new.email)
+  execute function public.handle_user_email_change();
