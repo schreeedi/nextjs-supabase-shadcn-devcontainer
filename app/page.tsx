@@ -1,8 +1,13 @@
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { SignedInSwitch } from "@/components/signed-in";
+import { JsonLd } from "@/components/json-ld";
+import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/site";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 import {
   Card,
   CardDescription,
@@ -28,16 +33,21 @@ const features = [
   },
 ];
 
-export default async function Home() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+// Static: no session lookup on the server (see components/signed-in.tsx).
+export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: SITE_NAME,
+          description: SITE_DESCRIPTION,
+          url: siteUrl(),
+        }}
+      />
       {/* Header */}
-      <SiteHeader user={user} />
+      <SiteHeader />
 
       {/* Hero */}
       <main className="flex-1">
@@ -50,20 +60,25 @@ export default async function Home() {
             seconds — no setup, no passwords.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            {user ? (
-              <Button size="lg" asChild>
-                <Link href="/app/dashboard">Go to dashboard</Link>
-              </Button>
-            ) : (
-              <>
+            <SignedInSwitch
+              signedIn={
                 <Button size="lg" asChild>
-                  <Link href="/signup">Get started for free</Link>
+                  <Link href="/app/dashboard" prefetch={false}>
+                    Go to dashboard
+                  </Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/login">Log in</Link>
-                </Button>
-              </>
-            )}
+              }
+              signedOut={
+                <>
+                  <Button size="lg" asChild>
+                    <Link href="/signup">Get started for free</Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link href="/login">Log in</Link>
+                  </Button>
+                </>
+              }
+            />
           </div>
         </section>
 
