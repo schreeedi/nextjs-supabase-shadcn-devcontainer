@@ -5,6 +5,7 @@
 // service role, worker).
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
 import {
   featureLabel,
   featurePlan,
@@ -60,13 +61,13 @@ export function planDenied(plan: Plan, feature: FeatureKey): Response | null {
  * failing closed: a broken read never unlocks a paid feature.
  */
 export async function loadPlan(
-  db: SupabaseClient,
+  db: SupabaseClient<Database>,
   userId: string,
 ): Promise<Plan> {
   const { data } = await db
     .from("profiles")
     .select("plan")
     .eq("id", userId)
-    .maybeSingle<{ plan: string | null }>();
+    .maybeSingle();
   return normalizePlan(data?.plan);
 }

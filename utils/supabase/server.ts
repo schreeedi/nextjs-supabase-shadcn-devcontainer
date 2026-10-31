@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { cache } from "react";
+import type { Database } from "@/types/database";
 
 type CookieStore = Awaited<ReturnType<typeof cookies>>;
 type ServerClient = ReturnType<typeof createRawClient>;
@@ -35,7 +36,7 @@ export async function createClient() {
 }
 
 function createRawClient(cookieStore: CookieStore) {
-  return createServerClient(
+  return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {

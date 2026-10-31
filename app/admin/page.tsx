@@ -15,13 +15,6 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 50;
 
-type QueueHealth = {
-  queue_name: string;
-  queue_length: number;
-  oldest_msg_age_sec: number | null;
-  dead_recent: number;
-};
-
 export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   await requireAdminPage();
   const { page: rawPage } = await searchParams;
@@ -49,12 +42,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         )
     : { data: [] };
   const planOf = new Map(
-    (profiles ?? []).map((p: { id: string; plan: string }) => [
-      p.id,
-      normalizePlan(p.plan),
-    ]),
+    (profiles ?? []).map((p) => [p.id, normalizePlan(p.plan)]),
   );
-  const queues = (queuesRes.data ?? []) as QueueHealth[];
+  const queues = queuesRes.data ?? [];
 
   return (
     <>

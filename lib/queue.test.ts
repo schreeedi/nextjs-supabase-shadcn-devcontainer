@@ -17,7 +17,7 @@ describe("enqueueJob", () => {
       p_queue: "default",
       p_type: "mail.send",
       p_payload: {},
-      p_user_id: null,
+      p_user_id: undefined,
       p_delay_seconds: 0,
       p_max_attempts: 5,
     });

@@ -177,6 +177,9 @@ queue, type, payload, { userId })` (`lib/queue.ts`).
   `db:reset`.
 - After every new migration: `npm run db:reset && npm run db:types` →
   `types/database.ts`. Commit both together.
+- Every Supabase client is typed (`<Database>`, `SupabaseClient<Database>`
+  in `lib/`). No `as` casts on query results — a cast hides schema drift;
+  regenerate the types instead.
 - `supabase/config.toml` changed → `npm run db:stop && npm run db:start`.
 - Check RLS/performance with the Supabase MCP advisors (`get_advisors`) after
   schema changes.

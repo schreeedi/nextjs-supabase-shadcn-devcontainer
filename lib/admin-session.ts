@@ -1,6 +1,7 @@
 import "server-only";
 import { notFound } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Json } from "@/types/database";
 import { createClient } from "@/utils/supabase/server";
 import { createServiceClient } from "@/utils/supabase/service";
 import { isAdmin, type AdminAuditAction } from "@/lib/admin";
@@ -29,7 +30,7 @@ export async function requireAdminPage(): Promise<string> {
   return adminId;
 }
 
-export type AdminCtx = { adminId: string; svc: SupabaseClient };
+export type AdminCtx = { adminId: string; svc: SupabaseClient<Database> };
 export type AdminActionFail = { ok: false; error: string };
 
 export const NOT_ADMIN = "Not authorised.";
@@ -55,12 +56,12 @@ export function adminAction<A extends unknown[], R>(
  * support action that already happened.
  */
 export async function logAdminAction(
-  svc: SupabaseClient,
+  svc: SupabaseClient<Database>,
   entry: {
     adminId: string;
     targetUserId: string | null;
     action: AdminAuditAction;
-    detail?: Record<string, unknown>;
+    detail?: { [key: string]: Json | undefined };
   },
 ): Promise<void> {
   const log = createLogger({ service: "app", action: "admin:audit" });
