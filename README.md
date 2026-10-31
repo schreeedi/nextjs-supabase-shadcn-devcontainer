@@ -81,7 +81,7 @@ Both providers are already enabled in `supabase/config.toml`. Restart the stack 
 npx supabase stop && npx supabase start
 ```
 
-> **Tip:** You can register both the local (`http://localhost:54321/...`) and production (`https://<project>.supabase.co/...`) redirect URIs in the _same_ Google/Facebook app — no need for separate apps.
+> **Tip:** You can register both the local (`http://localhost:54321/...`) and production (`https://<your-supabase-domain>/auth/v1/callback`) redirect URIs in the _same_ Google/Facebook app — no need for separate apps.
 
 ---
 
@@ -109,7 +109,7 @@ SQL files in `supabase/migrations/` run automatically on `supabase start` / `db 
 
 - `public.profiles` table linked to `auth.users`
 - RLS policies (users read/update only their own row); column grants keep
-  `plan` and `email` out of users' reach (`*_harden_grants.sql`)
+  `plan` and `email` out of users' reach
 - Trigger that auto-creates a profile on signup (incl. OAuth — pulls `full_name` and `avatar_url` from Google/Facebook metadata)
 
 And the job queue (`*_job_queue.sql`): `public.jobs` + pgmq with
@@ -175,12 +175,30 @@ docs/deployment.md           # Proxy caching, CWV, logging & monitoring best pra
 .env.local.example           # Next.js env (local defaults prefilled)
 ```
 
-## Switching to hosted Supabase (production)
+## Production: self-hosted Supabase
 
-1. `npx supabase link --project-ref <your-project-ref>`
-2. `npx supabase db push` — applies your migrations to the hosted DB
-3. Set the production values in your deployment env (see comments in `.env.local.example`)
-4. Configure Google/Facebook in the Supabase Dashboard with the hosted callback URL
-5. Dashboard → Authentication → Providers → **Email: off** (mirrors
-   `[auth.email] enable_signup = false` in `config.toml`). Left on with
-   auto-confirm it allows pre-account takeover of OAuth users.
+Production runs Supabase from its [Docker setup](https://supabase.com/docs/guides/self-hosting/docker)
+(`supabase/docker`), not Supabase Cloud. `supabase/config.toml` configures
+**only the local CLI stack** — production auth is configured through the
+self-hosting `.env` / `docker-compose.yml`, so mirror it there:
+
+1. Auth in the self-hosting `.env` — its defaults are **more open** than this
+   app wants:
+
+   ```bash
+   DISABLE_SIGNUP=false            # OAuth sign-ups must still work
+   ENABLE_EMAIL_SIGNUP=false       # default true — pre-account takeover of OAuth users
+   ENABLE_EMAIL_AUTOCONFIRM=false
+   ENABLE_PHONE_SIGNUP=false       # default true, with autoconfirm on
+   ENABLE_ANONYMOUS_USERS=false
+   SITE_URL=https://your-domain.com
+   ADDITIONAL_REDIRECT_URLS=https://your-domain.com/auth/callback
+   ```
+
+2. Google/Facebook: add `GOTRUE_EXTERNAL_GOOGLE_{ENABLED,CLIENT_ID,SECRET,REDIRECT_URI}`
+   (same for `FACEBOOK`) to the `auth` service in `docker-compose.yml`
+   ([self-hosted OAuth](https://supabase.com/docs/guides/self-hosting/self-hosted-oauth));
+   the redirect URI is `https://<your-supabase-domain>/auth/v1/callback`.
+3. Migrations: `npx supabase db push --db-url "postgresql://postgres:<password>@<db-host>:5432/postgres"`.
+4. App env: see the production block in `.env.local.example` and
+   [docs/deployment.md](docs/deployment.md).

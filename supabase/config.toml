@@ -39,8 +39,10 @@ enable_signup = true
 # Email/password is off: the app signs in with OAuth only. Left on with
 # auto-confirm, anyone could sign up as victim@gmail.com with a password and
 # get the victim's Google identity linked to that account on their first
-# Google login (pre-account takeover). Hosted project: Dashboard → Auth →
-# Providers → Email → off. If you add email login, turn confirmations on.
+# Google login (pre-account takeover). This file only configures the local
+# stack — production (self-hosted): ENABLE_EMAIL_SIGNUP=false in the Supabase
+# docker .env (README → Production). If you add email login, turn
+# confirmations on.
 [auth.email]
 enable_signup = false
 double_confirm_changes = true

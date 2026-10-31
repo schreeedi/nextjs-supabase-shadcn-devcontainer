@@ -2,7 +2,8 @@
 
 The template ships no deploy setup. This page collects what proved itself in
 production on self-hosted Next.js + Supabase (Docker behind nginx), so the
-first deployment doesn't rediscover it.
+first deployment doesn't rediscover it. Supabase auth settings for production
+(signup providers, OAuth): README → "Production: self-hosted Supabase".
 
 ## Processes
 
