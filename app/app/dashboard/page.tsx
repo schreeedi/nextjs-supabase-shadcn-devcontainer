@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getInitials, getProviderLabel } from "@/lib/user";
+import { loadPlan } from "@/lib/plan-gate";
+import { PLAN_LABELS } from "@/lib/plan-features";
+import { PlanGate } from "@/components/plan-gate";
 import { LogOut, User, Mail, Shield } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -20,6 +23,8 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
+
+  const plan = await loadPlan(supabase, user.id);
 
   const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
   const fullName = user.user_metadata?.full_name as string | undefined;
@@ -111,6 +116,13 @@ export default async function DashboardPage() {
             <p>✅ Facebook OAuth connected</p>
             <p>✅ Protected routes via middleware</p>
             <p>✅ Shadcn UI components ready</p>
+            <p>
+              Your plan: <strong>{PLAN_LABELS[plan]}</strong>
+            </p>
+            {/* Example of a plan-gated section (lib/plan-features.ts) */}
+            <PlanGate plan={plan} feature="dataExport">
+              <p>✅ Data export available</p>
+            </PlanGate>
           </CardContent>
         </Card>
       </div>
