@@ -18,6 +18,15 @@ Open work that isn't in code yet. Done items are removed, not ticked.
   reconsider once the package has a track record — then drop the rewrite step
   and `test/shadcn-components.test.ts`'s cn check.
 
+## Testing
+
+- Load tests with k6 against a staging deployment (not the devcontainer):
+  the proxy's session refresh, `/api/health/ready`, a signed-in dashboard
+  render, and enqueue throughput of the job queue. Gives numbers for nginx
+  limits, the Supabase pooler size and `visibilitySeconds`. Needs a target
+  that resembles production first — locally it would measure Docker on WSL.
+- E2E in CI (GitHub Actions: supabase start, playwright install --with-deps).
+
 ## Auth
 
 - MFA (aal2) for `/admin` once the app has 2FA (see AGENTS.md).

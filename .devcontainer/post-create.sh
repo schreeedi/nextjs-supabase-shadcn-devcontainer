@@ -15,6 +15,11 @@ echo "── Installing npm dependencies (incl. Supabase CLI) ─────"
 npm install
 npx supabase --version
 
+echo "── Chromium for Playwright (E2E) and agent-browser ──────"
+# One browser for both: npm run browser points agent-browser at it.
+# --with-deps installs the system libraries (libnss3, libatk …) via sudo.
+npx playwright install --with-deps chromium
+
 echo "── Creating .env.local from example (if missing) ────────"
 if [ ! -f .env.local ]; then
   cp .env.local.example .env.local

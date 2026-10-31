@@ -98,6 +98,8 @@ npm run db:reset      # wipe DB + re-run migrations + seed
 npm run db:status     # show URLs + keys
 npm run db:types      # generate types/database.ts from the local schema
 npm run db:test       # pgTAP tests in supabase/tests (RLS, grants) against the local stack
+npm run test:e2e      # Playwright journeys against a prod build on :3100 (needs the stack)
+npm run browser -- open http://localhost:3000   # agent-browser (screenshots: … screenshot out.png)
 npx supabase migration new <name>   # new migration with a real timestamp
 ```
 

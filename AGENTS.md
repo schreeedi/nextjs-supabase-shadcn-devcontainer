@@ -39,6 +39,7 @@ supabase/          config.toml, migrations/ (run on db:start / db:reset)
 proxy.ts           Next 16 middleware entry (request id, noindex, updateSession)
 instrumentation.ts onRequestError → structured log
 test/              cross-cutting tests (client bundle guard, migrations)
+e2e/               Playwright user journeys (setup creates test users)
 types/             database.ts (generated, npm run db:types), css.d.ts
 ```
 
@@ -206,13 +207,17 @@ public, anon, authenticated`.
   3. DB tests against the local stack (pgTAP, `supabase/tests/database/`,
      `npm run db:test`): RLS (user B must not read/write user A's rows),
      grants, SQL functions, triggers.
-  4. E2E (Playwright, when added): user flows across pages, against a
-     production build.
+  4. E2E (Playwright, `e2e/`, `npm run test:e2e`): user journeys across
+     pages, against a production build on :3100. Signed-in journeys get
+     sessions from service-role magic links (`e2e/users.ts`, ADR-004); one
+     test user per mutating journey, tests arrange their own state. Not in
+     `npm run check` (needs build + stack) — run it for UI/auth/routing work.
 - **TDD for bugs and specified behaviour**: write the failing test first,
   from the spec/expected behaviour — not from what the code currently does.
   If the code disagrees, the code is wrong; never bend the assertion.
 - **UI work**: render it and look at it (browser/screenshot), don't accept a
-  layout on paper.
+  layout on paper — `npm run browser -- open <url>` / `screenshot <path>`
+  (agent-browser on Playwright's Chromium), light and dark mode.
 - **Done means committed** — with the docs that changed along with it
   (Conventional Commits: `feat(scope): …`, `fix: …`, `docs: …`).
 - **Name new migrations and new env vars** in the commit/PR — they have to be

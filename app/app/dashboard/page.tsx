@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { ModeToggle } from "@/components/mode-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,12 +42,15 @@ export default async function DashboardPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
 
-          <form action="/auth/logout" method="POST">
-            <Button variant="ghost" size="sm" type="submit" className="gap-2">
-              <LogOut className="h-4 w-4" />
-              Sign out
-            </Button>
-          </form>
+          <div className="flex items-center gap-1">
+            <ModeToggle />
+            <form action="/auth/logout" method="POST">
+              <Button variant="ghost" size="sm" type="submit" className="gap-2">
+                <LogOut className="h-4 w-4" />
+                Sign out
+              </Button>
+            </form>
+          </div>
         </div>
 
         {/* Profile card */}

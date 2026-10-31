@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdminPage } from "@/lib/admin-session";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -29,6 +30,9 @@ export default async function AdminLayout({
           >
             Back to app
           </Link>
+          <div className="ml-auto">
+            <ModeToggle />
+          </div>
         </nav>
       </header>
       <main className="mx-auto w-full max-w-6xl space-y-6 p-4">{children}</main>

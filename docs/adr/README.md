@@ -33,3 +33,4 @@ Not for: bug fixes, refactorings within one module, naming.
 | [001](001-background-jobs-on-pgmq.md)         | Background jobs on Supabase Queues (pgmq)    | Accepted |
 | [002](002-single-plan-feature-register.md)    | One plan/feature register, one gate function | Accepted |
 | [003](003-proxy-caches-only-static-assets.md) | Reverse proxy caches only `/_next/static`    | Accepted |
+| [004](004-e2e-sessions-via-magic-link.md)     | E2E sessions via service-role magic links    | Accepted |
