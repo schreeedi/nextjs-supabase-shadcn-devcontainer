@@ -1,0 +1,46 @@
+"use client";
+
+import { useActionState } from "react";
+import { Button } from "@/components/ui/button";
+import { setUserPlan, type AdminActionState } from "@/app/admin/actions";
+import { PLAN_LABELS, PLANS, type Plan } from "@/lib/plan-features";
+
+export function PlanForm({ userId, plan }: { userId: string; plan: Plan }) {
+  const [state, action, pending] = useActionState<AdminActionState, FormData>(
+    setUserPlan,
+    { ok: true },
+  );
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-3">
+      <input type="hidden" name="userId" value={userId} />
+      <label htmlFor="plan" className="text-sm font-medium">
+        Plan
+      </label>
+      <select
+        id="plan"
+        name="plan"
+        defaultValue={plan}
+        className="h-9 rounded-md border bg-background px-3 text-sm"
+      >
+        {PLANS.map((p) => (
+          <option key={p} value={p}>
+            {PLAN_LABELS[p]}
+          </option>
+        ))}
+      </select>
+      <Button type="submit" size="sm" disabled={pending}>
+        {pending ? "Saving…" : "Save"}
+      </Button>
+      {state.error && (
+        <p role="alert" className="text-sm text-destructive">
+          {state.error}
+        </p>
+      )}
+      {state.message && (
+        <p role="status" className="text-sm text-muted-foreground">
+          {state.message}
+        </p>
+      )}
+    </form>
+  );
+}
