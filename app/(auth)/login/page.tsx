@@ -1,5 +1,8 @@
 import { AuthCard } from "@/components/auth-card";
 import { safeNextPath } from "@/lib/nav";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Log in" };
 
 // Signed-in users never get here: the proxy redirects them away
 // (utils/supabase/middleware.ts).

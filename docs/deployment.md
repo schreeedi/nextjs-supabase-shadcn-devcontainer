@@ -23,6 +23,17 @@ first deployment doesn't rediscover it.
 - Liveness must not check dependencies: a DB outage would otherwise restart
   healthy app containers in a loop. Readiness may.
 
+### Rolling deploys / several instances
+
+- `NEXT_DEPLOYMENT_ID=<git sha>` at **build** time: Next tags assets
+  (`?dpl=`) and navigations with it and forces a full reload when a browser
+  still runs the old version — no "Failed to find Server Action" or missing
+  chunks mid-deploy. Complements the nginx cache below, which keeps old
+  `/_next/static` chunks around.
+- `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` (`openssl rand -base64 32`): only if
+  instances are **built separately**. One image built once and scaled out
+  already shares the key it was built with.
+
 ## Reverse proxy (nginx) — caching and limits
 
 Decision and rejected alternatives: [ADR-003](adr/003-proxy-caches-only-static-assets.md).

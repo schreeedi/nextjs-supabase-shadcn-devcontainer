@@ -20,6 +20,8 @@ function supabaseOrigin(): string | null {
 //   Facebook …). Tighten to explicit hosts once the provider list is fixed.
 // - form-action: the OAuth server action redirects to Supabase, which
 //   redirects on to the provider — browsers check the whole chain.
+// - upgrade-insecure-requests: production only — in dev it would rewrite
+//   http://127.0.0.1:54321 (local Supabase) to https and break it.
 // - Add third-party origins (Stripe, analytics, …) here as you introduce them.
 function contentSecurityPolicy(): string {
   const supabase = supabaseOrigin();
@@ -47,25 +49,16 @@ function contentSecurityPolicy(): string {
       "https://www.facebook.com",
     ],
     "frame-ancestors": ["'none'"],
+    ...(isDev ? {} : { "upgrade-insecure-requests": [] }),
   };
   return Object.entries(directives)
-    .map(([key, values]) => `${key} ${values.join(" ")}`)
+    .map(([key, values]) => [key, ...values].join(" "))
     .join("; ");
 }
 
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "lh3.googleusercontent.com", // Google profile pictures
-      },
-      {
-        protocol: "https",
-        hostname: "avatars.githubusercontent.com",
-      },
-    ],
-  },
+  // No images.remotePatterns: nothing uses next/image yet (avatars are plain
+  // <img> via Radix). When it does, list the real provider hosts + pathname.
   async headers() {
     return [
       {

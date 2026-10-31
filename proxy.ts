@@ -1,11 +1,14 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
 import { NOINDEX_HEADER, siteIndexable } from "@/lib/site";
+import { requestId as toRequestId } from "@/lib/request-id";
 
 export async function proxy(request: NextRequest) {
   // Correlation id for every log line of this request (instrumentation.ts);
-  // one sent by the reverse proxy is kept.
-  const requestId = request.headers.get("x-request-id") || crypto.randomUUID();
+  // a well-formed one sent by the reverse proxy is kept. updateSession
+  // forwards request.headers via NextResponse.next({ request }), which is how
+  // the id reaches route handlers and server components.
+  const requestId = toRequestId(request.headers.get("x-request-id"));
   request.headers.set("x-request-id", requestId);
 
   const response = await updateSession(request);
