@@ -16,7 +16,7 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
@@ -24,6 +24,11 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );
+          // Cache-Control: no-store & co. — a CDN must never serve one
+          // user's fresh session cookie to another.
+          for (const [key, value] of Object.entries(headers)) {
+            supabaseResponse.headers.set(key, value);
+          }
         },
       },
     },
@@ -48,12 +53,17 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Redirects are separate responses: if getClaims() refreshed the session
-  // above, the new cookies sit on supabaseResponse only. Copy them over, or the
-  // browser keeps the already-used refresh token and is logged out next time.
+  // above, the new cookies (and their no-store headers) sit on
+  // supabaseResponse only. Copy them over, or the browser keeps the
+  // already-used refresh token and is logged out next time.
   const redirectTo = (url: URL) => {
     const res = NextResponse.redirect(url);
     for (const cookie of supabaseResponse.cookies.getAll()) {
       res.cookies.set(cookie);
+    }
+    for (const key of ["Cache-Control", "Expires", "Pragma"]) {
+      const value = supabaseResponse.headers.get(key);
+      if (value) res.headers.set(key, value);
     }
     return res;
   };

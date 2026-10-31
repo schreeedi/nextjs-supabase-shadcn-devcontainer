@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { isOAuthProvider } from "@/lib/user";
 import { safeNextPath } from "@/lib/nav";
+import { authCallbackUrl } from "@/lib/site";
 
 export async function signInWithProvider(formData: FormData) {
   // Form input is untrusted — only start flows for providers we actually offer.
@@ -12,14 +13,12 @@ export async function signInWithProvider(formData: FormData) {
 
   // Carry the original target (set by the proxy as ?next=) through the OAuth
   // round trip; the callback validates it again.
-  const callback = new URL("/auth/callback", process.env.NEXT_PUBLIC_SITE_URL);
   const next = safeNextPath(formData.get("next")?.toString());
-  if (next) callback.searchParams.set("next", next);
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: callback.toString() },
+    options: { redirectTo: authCallbackUrl(next) },
   });
 
   if (error) {

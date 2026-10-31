@@ -17,7 +17,9 @@ first deployment doesn't rediscover it.
   process time.
 - `SITE_ENV=staging` (anything but empty/`prod`/`production`) → `noindex` via
   `robots.txt` and `X-Robots-Tag`. `SITE_URL` must be set at **build** time
-  too: static pages bake `metadataBase`/canonical URLs in.
+  too: static pages bake `metadataBase`/canonical URLs in. The OAuth callback
+  reads it at runtime (`authCallbackUrl()`); never use
+  `process.env.NEXT_PUBLIC_*` for runtime config — Next inlines it at build.
 - Liveness must not check dependencies: a DB outage would otherwise restart
   healthy app containers in a loop. Readiness may.
 

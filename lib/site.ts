@@ -12,6 +12,20 @@ export function siteUrl(env: NodeJS.ProcessEnv = process.env): string {
 }
 
 /**
+ * OAuth redirect target. Uses siteUrl(), never `process.env.NEXT_PUBLIC_*`
+ * directly: Next inlines those at build time, and deployments set SITE_URL.
+ * `next` must already be validated (safeNextPath); the callback checks again.
+ */
+export function authCallbackUrl(
+  next: string | null,
+  env: NodeJS.ProcessEnv = process.env,
+): string {
+  const url = new URL("/auth/callback", siteUrl(env));
+  if (next) url.searchParams.set("next", next);
+  return url.toString();
+}
+
+/**
  * May search engines index this deployment? Only an explicit non-prod
  * `SITE_ENV` (staging, preview, …) turns indexing off — a missing variable
  * must never de-index production.

@@ -97,6 +97,7 @@ npm run db:stop       # supabase stop   — stop containers (data persists)
 npm run db:reset      # wipe DB + re-run migrations + seed
 npm run db:status     # show URLs + keys
 npm run db:types      # generate types/database.ts from the local schema
+npm run db:test       # pgTAP tests in supabase/tests (RLS, grants) against the local stack
 npx supabase migration new <name>   # new migration with a real timestamp
 ```
 
@@ -105,7 +106,8 @@ npx supabase migration new <name>   # new migration with a real timestamp
 SQL files in `supabase/migrations/` run automatically on `supabase start` / `db reset`. A starter migration is included:
 
 - `public.profiles` table linked to `auth.users`
-- RLS policies (users read/update only their own row)
+- RLS policies (users read/update only their own row); column grants keep
+  `plan` and `email` out of users' reach (`*_harden_grants.sql`)
 - Trigger that auto-creates a profile on signup (incl. OAuth — pulls `full_name` and `avatar_url` from Google/Facebook metadata)
 
 And the job queue (`*_job_queue.sql`): `public.jobs` + pgmq with
@@ -177,3 +179,6 @@ docs/deployment.md           # Proxy caching, CWV, logging & monitoring best pra
 2. `npx supabase db push` — applies your migrations to the hosted DB
 3. Set the production values in your deployment env (see comments in `.env.local.example`)
 4. Configure Google/Facebook in the Supabase Dashboard with the hosted callback URL
+5. Dashboard → Authentication → Providers → **Email: off** (mirrors
+   `[auth.email] enable_signup = false` in `config.toml`). Left on with
+   auto-confirm it allows pre-account takeover of OAuth users.

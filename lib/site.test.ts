@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { siteIndexable, siteUrl } from "@/lib/site";
+import { authCallbackUrl, siteIndexable, siteUrl } from "@/lib/site";
 
 const env = (vars: Record<string, string>) => vars as NodeJS.ProcessEnv;
 
@@ -23,6 +23,24 @@ describe("siteUrl", () => {
     expect(siteUrl(env({ SITE_URL: "https://a.example//" }))).toBe(
       "https://a.example",
     );
+  });
+});
+
+describe("authCallbackUrl", () => {
+  it("builds the callback from SITE_URL at runtime", () => {
+    // Deployments set SITE_URL only (docs/deployment.md) — login must work.
+    expect(authCallbackUrl(null, env({ SITE_URL: "https://a.example/" }))).toBe(
+      "https://a.example/auth/callback",
+    );
+  });
+
+  it("carries the next path through the OAuth round trip", () => {
+    expect(
+      authCallbackUrl(
+        "/app/dashboard?tab=1",
+        env({ SITE_URL: "https://a.example" }),
+      ),
+    ).toBe("https://a.example/auth/callback?next=%2Fapp%2Fdashboard%3Ftab%3D1");
   });
 });
 

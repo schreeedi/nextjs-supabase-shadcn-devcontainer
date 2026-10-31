@@ -180,6 +180,12 @@ queue, type, payload, { userId })` (`lib/queue.ts`).
 - `supabase/config.toml` changed → `npm run db:stop && npm run db:start`.
 - Check RLS/performance with the Supabase MCP advisors (`get_advisors`) after
   schema changes.
+- Grants are a lock of their own, not "covered by RLS": revoke what the API
+  roles must never do (INSERT/DELETE/TRUNCATE, protected columns) in the same
+  migration, and assert it in `supabase/tests/database/privileges.test.sql`.
+- Functions in `public` are `security invoker` unless they must bypass RLS;
+  definer functions get `set search_path = ''` and `revoke execute … from
+public, anon, authenticated`.
 
 ## Working rules
 
@@ -192,8 +198,9 @@ queue, type, payload, { userId })` (`lib/queue.ts`).
   2. Static/meta tests (`test/`): import graph (client bundle guard),
      migration names, worker bundle — cheap guards against whole classes of
      mistakes; add one when a mistake could recur.
-  3. DB tests against the local stack: RLS (user B must not read/write user
-     A's rows), SQL functions, triggers.
+  3. DB tests against the local stack (pgTAP, `supabase/tests/database/`,
+     `npm run db:test`): RLS (user B must not read/write user A's rows),
+     grants, SQL functions, triggers.
   4. E2E (Playwright, when added): user flows across pages, against a
      production build.
 - **TDD for bugs and specified behaviour**: write the failing test first,

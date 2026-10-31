@@ -22,6 +22,7 @@
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run typecheck:strict && npm run test",
     "db:types": "scripts/db-types.sh",
     "db:types:check": "scripts/db-types.sh --check",
+    "db:test": "supabase test db",
     "build:worker": "node scripts/build-worker-bundle.mjs",
     "worker": "npm run build:worker && node --enable-source-maps --env-file=.env.local dist/worker/worker.mjs"
   },

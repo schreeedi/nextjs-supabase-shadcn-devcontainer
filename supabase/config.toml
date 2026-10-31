@@ -6,7 +6,8 @@ project_id = "nextjs-supabase-shadcn"
 [api]
 enabled = true
 port = 54321
-schemas = ["public", "graphql_public"]
+# graphql_public dropped: pg_graphql isn't installed. Expose only what is used.
+schemas = ["public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
@@ -35,10 +36,15 @@ enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
 enable_signup = true
 
+# Email/password is off: the app signs in with OAuth only. Left on with
+# auto-confirm, anyone could sign up as victim@gmail.com with a password and
+# get the victim's Google identity linked to that account on their first
+# Google login (pre-account takeover). Hosted project: Dashboard → Auth →
+# Providers → Email → off. If you add email login, turn confirmations on.
 [auth.email]
-enable_signup = true
+enable_signup = false
 double_confirm_changes = true
-enable_confirmations = false
+enable_confirmations = true
 
 # ── Google OAuth ─────────────────────────────────────────────
 # Set env vars in .env (repo root, read by `supabase start`):
