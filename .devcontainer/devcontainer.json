@@ -31,7 +31,7 @@
     "54321": { "label": "Supabase API (Kong)" },
     "54322": { "label": "Supabase Postgres" },
     "54323": { "label": "Supabase Studio", "onAutoForward": "openPreview" },
-    "54324": { "label": "Inbucket (Mail testing)" }
+    "54324": { "label": "Mailpit (Mail testing)" }
   },
 
   // Bind sources must exist before the container starts (runs on the host)

@@ -3,14 +3,17 @@
 A ready-to-run Next.js 16 app with a **fully local Supabase stack running in Docker**:
 
 - **Supabase local stack** (Postgres, Auth, PostgREST, Storage, Studio) via Supabase CLI
-- **Google OAuth** + **Facebook OAuth** login
-- **Shadcn UI** + Tailwind CSS v4
+- **Google OAuth** + **Facebook OAuth** login (OAuth only — email/password signup is off)
+- **Shadcn UI** (new-york, v4) + Tailwind CSS v4, light/dark mode via next-themes
+- **Plans & feature gates** (Free/Pro/Business) from one register, enforced in UI, actions, API, worker and DB
+- **Admin console** (`/admin`, `ADMIN_USER_IDS`) with audited actions
 - **Background jobs** on Supabase Queues (pgmq) + a bundled **worker** process
 - Structured JSON logging, health endpoints, queue monitoring
-- Security headers/CSP, open-redirect-safe auth flow, RLS-first schema
-- SEO basics (metadata, robots, sitemap, JSON-LD), static landing page
-- **Vitest** unit tests + ESLint (flat config) + Prettier + strict typecheck (`npm run check`)
-- Devcontainer with **docker-in-docker**; agent setup (AGENTS.md, skills, MCP)
+- Security headers/CSP, open-redirect-safe auth flow, RLS-first schema with locked-down grants
+- SEO basics (metadata, robots, sitemap, JSON-LD, icon/OG image), static landing page
+- Tests on every level: **Vitest** (unit/static), **pgTAP** (RLS, grants), **Playwright** user journeys
+- ESLint (flat config) + Prettier + strict typecheck (`npm run check`)
+- Devcontainer with **docker-in-docker**; agent setup (AGENTS.md, ADRs, skills, MCP, agent-browser)
 
 ## Do we need Docker Compose?
 
@@ -24,8 +27,8 @@ No — not one you write yourself. The **Supabase CLI** (`supabase start`) orche
 
 ```bash
 # 1. Open in VS Code → "Reopen in Container"
-#    (post-create installs npm deps + Supabase CLI;
-#     post-start boots the Supabase Docker stack automatically)
+#    (post-create installs npm deps, Supabase CLI and Chromium for E2E;
+#     post-start boots the Supabase Docker stack and fills .env.local keys)
 
 # 2. Configure OAuth secrets for the local stack
 cp .env.example .env          # fill in Google/Facebook client IDs + secrets
@@ -40,11 +43,14 @@ npm run dev
 | Supabase API    | http://localhost:54321 |
 | Supabase Studio | http://localhost:54323 |
 | Postgres        | localhost:54322        |
-| Inbucket (mail) | http://localhost:54324 |
+| Mailpit (mail)  | http://localhost:54324 |
 
 `.env.local` is auto-created from `.env.local.example`; on every container start `scripts/local-env.sh` fills in the local Supabase keys from `supabase status` (only empty values — yours are never overwritten). Nothing to change for local dev. After `supabase start` outside the container: `npm run env:local`.
 
 No key is committed, not even the well-known local defaults: GitHub push protection rejects `sb_secret_…` in any file.
+
+Admin console: sign in once, copy your user id (Studio → Authentication) into
+`ADMIN_USER_IDS` in `.env.local`, restart `npm run dev`, open `/admin`.
 
 ---
 
@@ -108,16 +114,33 @@ npx supabase migration new <name>   # new migration with a real timestamp
 
 ## Migrations
 
-SQL files in `supabase/migrations/` run automatically on `supabase start` / `db reset`. A starter migration is included:
+SQL files in `supabase/migrations/` run automatically on `supabase start` / `db reset`:
 
-- `public.profiles` table linked to `auth.users`
-- RLS policies (users read/update only their own row); column grants keep
-  `plan` and `email` out of users' reach
-- Trigger that auto-creates a profile on signup (incl. OAuth — pulls `full_name` and `avatar_url` from Google/Facebook metadata)
+- `*_profiles.sql` — `public.profiles` linked to `auth.users`; RLS (users
+  read/update only their own row); grants keep `plan`, `email` and row
+  creation/deletion out of users' reach; triggers create the profile on
+  signup (incl. OAuth `full_name`/`avatar_url`) and follow email changes;
+  `plan_rank()` / `plan_at_least()` as the database backstop for plan gates.
+- `*_job_queue.sql` — `public.jobs` + pgmq with `enqueue_job` /
+  `worker_claim_jobs` / `worker_finish_job` (retry with backoff, dead letter,
+  poison sweep) and `queue_health` for monitoring.
+- `*_admin_audit.sql` — `public.admin_audit`, service role only.
 
-And the job queue (`*_job_queue.sql`): `public.jobs` + pgmq with
-`enqueue_job` / `worker_claim_jobs` / `worker_finish_job` (retry with
-backoff, dead letter, poison sweep) and `queue_health` for monitoring.
+`supabase/tests/database/` (pgTAP, `npm run db:test`) asserts the grants and
+RLS with two users. New migration → `npm run db:reset && npm run db:types`.
+
+## Tests
+
+| Level        | Where                           | Run                                  |
+| ------------ | ------------------------------- | ------------------------------------ |
+| Unit, static | `**/*.test.ts`, `test/`         | `npm test` (part of `npm run check`) |
+| Database     | `supabase/tests/database/`      | `npm run db:test` (needs the stack)  |
+| E2E journeys | `e2e/` (Playwright, prod build) | `npm run test:e2e` (needs the stack) |
+
+E2E signs in without OAuth: the setup creates test users and redeems a
+service-role magic link ([ADR-004](docs/adr/004-e2e-sessions-via-magic-link.md)).
+To look at a page yourself or let an agent screenshot it:
+`npm run browser -- open http://localhost:3000`, then `npm run browser -- screenshot out.png`.
 
 ## Background jobs
 
@@ -148,34 +171,44 @@ handler registered for the job type in `scripts/worker/plan.mjs`. Rules
 ```
 .devcontainer/
   devcontainer.json          # Node 26 + docker-in-docker + port forwards
-  post-create.sh             # npm install, project_id from folder name, .env.local
-  post-start.sh              # auto-starts the Supabase stack
+  post-create.sh             # npm install, Chromium, project_id from folder name, .env.local
+  post-start.sh              # starts the Supabase stack, fills .env.local keys
 .claude/                     # skills, security-review gate hook
 AGENTS.md / CLAUDE.md        # agent instructions (CLAUDE.md imports AGENTS.md)
+ROADMAP.md                   # open work
 .mcp.json                    # next-devtools, supabase (local), shadcn
 supabase/
   config.toml                # Local stack config incl. Google/Facebook OAuth
   migrations/                # SQL migrations (auto-applied)
+  tests/database/            # pgTAP: grants, RLS with two users
 app/
-  (auth)/login/page.tsx      # /login page (Google + Facebook OAuth)
-  (auth)/signup/page.tsx     # /signup page (same providers, own copy)
+  (auth)/login, (auth)/signup  # OAuth sign-in pages
   auth/callback/route.ts     # OAuth code exchange
-  auth/logout/route.ts
-  app/dashboard/page.tsx     # Protected page (everything under /app requires login)
+  auth/logout/route.ts       # POST only
+  app/dashboard/             # Protected area (everything under /app requires login)
+  admin/                     # Admin console (ADMIN_USER_IDS)
   api/health/{live,ready}    # health endpoints
+  not-found, error, global-error  # error boundaries
+  icon.tsx, opengraph-image.tsx   # generated favicon / share image
   robots.ts, sitemap.ts      # SEO (runtime env)
-  globals.css                # Tailwind v4 CSS-first config + Shadcn theme
+  globals.css                # Tailwind v4 CSS-first config + Shadcn theme (OKLCH)
 proxy.ts                     # Request id, noindex, session refresh + route guard
 instrumentation.ts           # onRequestError → structured log
-utils/supabase/              # browser/server/service clients
-components/ui/               # Shadcn components
-lib/                         # Framework-free logic + Vitest unit tests (logger, queue, nav, site)
+utils/supabase/              # browser/server/middleware/service clients (typed)
+components/                  # app components (plan gate, theme toggle, …)
+components/ui/               # Shadcn components (generated)
+lib/                         # Framework-free logic + Vitest unit tests
+types/database.ts            # generated from the local schema (npm run db:types)
 scripts/worker.mjs           # Background worker entry (bundled by scripts/build-worker-bundle.mjs)
 scripts/worker/              # loop, queue consumer, monitor, plan (job handlers)
-test/                        # Cross-cutting tests (client bundle guard, migrations)
+scripts/local-env.sh         # local Supabase keys → .env.local
+scripts/agent-browser.sh     # agent-browser on Playwright's Chromium
+test/                        # Cross-cutting tests (bundle guard, migrations, ADRs, no committed keys)
+e2e/                         # Playwright user journeys + test-user setup
+docs/adr/                    # Architecture decisions
 docs/deployment.md           # Proxy caching, CWV, logging & monitoring best practices
 .env.example                 # OAuth secrets for local Supabase stack
-.env.local.example           # Next.js env (local defaults prefilled)
+.env.local.example           # Next.js env (keys filled in by scripts/local-env.sh)
 ```
 
 ## Production: self-hosted Supabase
