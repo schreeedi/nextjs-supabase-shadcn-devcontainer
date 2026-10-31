@@ -5,7 +5,11 @@
   // Same zone as the deployment target: code that derives "today" from the
   // process clock must behave identically in dev, CI and prod.
   "containerEnv": {
-    "TZ": "Europe/Berlin"
+    "TZ": "Europe/Berlin",
+    // Claude keeps .claude.json inside the mounted dir instead of $HOME. A
+    // single-file bind of ~/.claude.json breaks: Claude rewrites it via
+    // rename (new inode), the mount goes stale and the container won't start.
+    "CLAUDE_CONFIG_DIR": "/home/node/.claude"
   },
 
   "features": {
@@ -31,12 +35,11 @@
   },
 
   // Bind sources must exist before the container starts (runs on the host)
-  "initializeCommand": "mkdir -p \"$HOME/.claude\" \"$HOME/.config/gh\" && touch \"$HOME/.claude.json\"",
+  "initializeCommand": "mkdir -p \"$HOME/.claude\" \"$HOME/.config/gh\"",
 
   "mounts": [
     // Share Claude Code login, settings and memory with the host
     "source=${localEnv:HOME}/.claude,target=/home/node/.claude,type=bind",
-    "source=${localEnv:HOME}/.claude.json,target=/home/node/.claude.json,type=bind",
     // Reuse the host's `gh auth login`
     "source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind"
   ],
