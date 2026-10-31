@@ -1,6 +1,12 @@
 {
   "name": "Next.js + Supabase (local) + Shadcn",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:24-bookworm",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:26-trixie",
+
+  // Same zone as the deployment target: code that derives "today" from the
+  // process clock must behave identically in dev, CI and prod.
+  "containerEnv": {
+    "TZ": "Europe/Berlin"
+  },
 
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
@@ -9,7 +15,8 @@
     },
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
       "version": "latest",
-      "moby": true
+      // Moby packages don't exist for Debian trixie; installs Docker CE instead
+      "moby": false
     },
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
@@ -23,7 +30,16 @@
     "54324": { "label": "Inbucket (Mail testing)" }
   },
 
-  "mounts": ["source=claude-code-config,target=/home/node/.claude,type=volume"],
+  // Bind sources must exist before the container starts (runs on the host)
+  "initializeCommand": "mkdir -p \"$HOME/.claude\" \"$HOME/.config/gh\" && touch \"$HOME/.claude.json\"",
+
+  "mounts": [
+    // Share Claude Code login, settings and memory with the host
+    "source=${localEnv:HOME}/.claude,target=/home/node/.claude,type=bind",
+    "source=${localEnv:HOME}/.claude.json,target=/home/node/.claude.json,type=bind",
+    // Reuse the host's `gh auth login`
+    "source=${localEnv:HOME}/.config/gh,target=/home/node/.config/gh,type=bind"
+  ],
 
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "postStartCommand": "bash .devcontainer/post-start.sh",
