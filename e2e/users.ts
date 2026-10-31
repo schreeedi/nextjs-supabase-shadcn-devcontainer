@@ -35,7 +35,9 @@ export type E2EUser = (typeof E2E_USERS)[keyof typeof E2E_USERS];
 
 function env(name: string): string {
   const value = process.env[name];
-  if (!value) throw new Error(`${name} must be set for E2E (see .env.local)`);
+  if (!value) {
+    throw new Error(`${name} must be set for E2E — run npm run env:local`);
+  }
   return value;
 }
 

@@ -26,7 +26,8 @@
     "build:worker": "node scripts/build-worker-bundle.mjs",
     "worker": "npm run build:worker && node --enable-source-maps --env-file=.env.local dist/worker/worker.mjs",
     "test:e2e": "playwright test",
-    "browser": "scripts/agent-browser.sh"
+    "browser": "scripts/agent-browser.sh",
+    "env:local": "scripts/local-env.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

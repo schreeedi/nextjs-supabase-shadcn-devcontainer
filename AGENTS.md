@@ -66,7 +66,8 @@ types/             database.ts (generated, npm run db:types), css.d.ts
   from route handlers via `redirectToPath()` (relative `Location`, no
   origin/`x-forwarded-host` guessing) — both in `lib/nav.ts`.
 - Service-role key: server-only, never `NEXT_PUBLIC_`, never in client
-  components. Every table gets RLS in the same migration that creates it;
+  components, never committed — not even the local default
+  (`scripts/local-env.sh` fills `.env.local` from `supabase status`). Every table gets RLS in the same migration that creates it;
   policies use `(select auth.uid())` and `to authenticated`.
 - Security headers + CSP live in `next.config.ts`. A new third-party origin
   (scripts, fetches, form redirects) must be added there, or the browser

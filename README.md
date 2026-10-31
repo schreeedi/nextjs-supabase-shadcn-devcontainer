@@ -42,7 +42,9 @@ npm run dev
 | Postgres        | localhost:54322        |
 | Inbucket (mail) | http://localhost:54324 |
 
-`.env.local` is auto-created with local defaults (URL + the well-known local demo anon key). Nothing to change for local dev.
+`.env.local` is auto-created from `.env.local.example`; on every container start `scripts/local-env.sh` fills in the local Supabase keys from `supabase status` (only empty values — yours are never overwritten). Nothing to change for local dev. After `supabase start` outside the container: `npm run env:local`.
+
+No key is committed, not even the well-known local defaults: GitHub push protection rejects `sb_secret_…` in any file.
 
 ---
 
@@ -97,6 +99,7 @@ npm run db:stop       # supabase stop   — stop containers (data persists)
 npm run db:reset      # wipe DB + re-run migrations + seed
 npm run db:status     # show URLs + keys
 npm run db:types      # generate types/database.ts from the local schema
+npm run env:local     # fill local Supabase keys into .env.local (supabase status)
 npm run db:test       # pgTAP tests in supabase/tests (RLS, grants) against the local stack
 npm run test:e2e      # Playwright journeys against a prod build on :3100 (needs the stack)
 npm run browser -- open http://localhost:3000   # agent-browser (screenshots: … screenshot out.png)

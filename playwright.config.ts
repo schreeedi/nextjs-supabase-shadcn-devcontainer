@@ -1,12 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 import { E2E_USERS } from "./e2e/users";
 
-// Supabase URL/keys for the setup (service role → test users). Local
-// defaults from the example if there is no .env.local (CI).
+// Supabase URL/keys for the setup (service role → test users) from
+// .env.local — in CI create it first: `npm run db:start && npm run env:local`.
 try {
   process.loadEnvFile(".env.local");
 } catch {
-  process.loadEnvFile(".env.local.example");
+  throw new Error(
+    "E2E needs .env.local with the local Supabase keys — run npm run env:local.",
+  );
 }
 
 const PORT = 3100;

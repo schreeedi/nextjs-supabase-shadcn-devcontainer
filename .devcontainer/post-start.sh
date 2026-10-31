@@ -16,4 +16,7 @@ done
 
 npx supabase start || true
 
+# Local keys (service role …) from the running stack into .env.local.
+bash scripts/local-env.sh || true
+
 echo "You can run \"npm run dev\" to start the Next.js dev server, or run \"npx supabase stop\" to stop the Supabase services."

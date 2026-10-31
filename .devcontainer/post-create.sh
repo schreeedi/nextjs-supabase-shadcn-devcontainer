@@ -23,7 +23,7 @@ npx playwright install --with-deps chromium
 echo "── Creating .env.local from example (if missing) ────────"
 if [ ! -f .env.local ]; then
   cp .env.local.example .env.local
-  echo "Created .env.local with local Supabase defaults."
+  echo "Created .env.local — keys are filled in on start (scripts/local-env.sh)."
 fi
 
 echo ""
