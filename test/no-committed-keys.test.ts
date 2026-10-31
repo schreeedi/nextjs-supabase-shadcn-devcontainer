@@ -10,7 +10,9 @@ const ROOT = new URL("..", import.meta.url).pathname;
 
 function trackedFilesMatching(pattern: string): string[] {
   try {
-    return execFileSync("git", ["grep", "-lE", pattern], {
+    // Exclude this file: it holds the patterns themselves.
+    const self = ":!test/no-committed-keys.test.ts";
+    return execFileSync("git", ["grep", "-lE", pattern, "--", ".", self], {
       cwd: ROOT,
       encoding: "utf8",
     })
