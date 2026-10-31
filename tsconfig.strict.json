@@ -1,0 +1,13 @@
+{
+  // Stricter check for everything except tests: index and key access
+  // (`rows[0]`, `map[key]`) yield `T | undefined`. Run via
+  // `npm run typecheck:strict` (part of `npm run check`); the editor keeps
+  // using tsconfig.json. Tests are excluded — there `rows[0].x` is everywhere
+  // and a miss fails the test immediately anyway.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": true,
+    "incremental": false
+  },
+  "exclude": ["node_modules", ".claude", "**/*.test.ts", "**/*.test.tsx"]
+}

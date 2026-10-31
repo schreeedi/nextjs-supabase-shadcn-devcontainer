@@ -1,0 +1,23 @@
+# What Prettier must NOT touch. Without this list `npm run format`
+# (prettier --write .) rewrites everything, including vendored and generated files.
+
+# Vendored agent skills (`npx skills add …`) — reformatted, they conflict on
+# every skills update.
+.agents/
+.claude/
+
+# Written back by tools in their own format
+package-lock.json
+*.tsbuildinfo
+.next/
+next-env.d.ts
+
+# Generated DB types are formatted by scripts/db-types.sh itself
+types/database.ts
+
+# GoTrue email templates: Prettier wraps `{{ .Token }}` placeholders and links
+supabase/templates/
+
+# Artefacts
+coverage/
+dist/

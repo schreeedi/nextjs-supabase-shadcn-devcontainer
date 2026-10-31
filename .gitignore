@@ -37,3 +37,9 @@ next-env.d.ts
 supabase/.temp
 supabase/.branches
 .env
+
+# db-types.sh temp file
+types/.database.gen.ts
+
+# worker bundle (npm run build:worker)
+/dist
