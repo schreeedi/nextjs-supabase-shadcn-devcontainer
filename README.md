@@ -5,8 +5,12 @@ A ready-to-run Next.js 16 app with a **fully local Supabase stack running in Doc
 - **Supabase local stack** (Postgres, Auth, PostgREST, Storage, Studio) via Supabase CLI
 - **Google OAuth** + **Facebook OAuth** login
 - **Shadcn UI** + Tailwind CSS v4
-- **Vitest** unit tests + ESLint (flat config) + Prettier, wired up in CI
-- Devcontainer with **docker-in-docker**
+- **Background jobs** on Supabase Queues (pgmq) + a bundled **worker** process
+- Structured JSON logging, health endpoints, queue monitoring
+- Security headers/CSP, open-redirect-safe auth flow, RLS-first schema
+- SEO basics (metadata, robots, sitemap, JSON-LD), static landing page
+- **Vitest** unit tests + ESLint (flat config) + Prettier + strict typecheck (`npm run check`)
+- Devcontainer with **docker-in-docker**; agent setup (AGENTS.md, skills, MCP)
 
 ## Do we need Docker Compose?
 
@@ -84,15 +88,16 @@ npx supabase stop && npx supabase start
 ## Useful commands
 
 ```bash
-npm test              # run Vitest unit tests (npm run test:watch for watch mode)
-npm run lint          # ESLint
+npm run check         # format check + lint + typecheck (+ strict) + tests — before every commit
+npm test              # Vitest (npm run test:watch, npm run test:coverage)
 npm run format        # Prettier (incl. Tailwind class sorting)
+npm run worker        # bundle + start the background worker (needs SUPABASE_SERVICE_ROLE_KEY)
 npm run db:start      # supabase start  — boot the Docker stack
 npm run db:stop       # supabase stop   — stop containers (data persists)
 npm run db:reset      # wipe DB + re-run migrations + seed
 npm run db:status     # show URLs + keys
-npx supabase db diff  # generate migration from Studio changes
-npx supabase gen types typescript --local > lib/database.types.ts
+npm run db:types      # generate types/database.ts from the local schema
+npx supabase migration new <name>   # new migration with a real timestamp
 ```
 
 ## Migrations
@@ -103,15 +108,44 @@ SQL files in `supabase/migrations/` run automatically on `supabase start` / `db 
 - RLS policies (users read/update only their own row)
 - Trigger that auto-creates a profile on signup (incl. OAuth — pulls `full_name` and `avatar_url` from Google/Facebook metadata)
 
+And the job queue (`*_job_queue.sql`): `public.jobs` + pgmq with
+`enqueue_job` / `worker_claim_jobs` / `worker_finish_job` (retry with
+backoff, dead letter, poison sweep) and `queue_health` for monitoring.
+
+## Background jobs
+
+```ts
+// server action / route handler
+import { createServiceClient } from "@/utils/supabase/service";
+import { enqueueJob } from "@/lib/queue";
+
+await enqueueJob(
+  createServiceClient(),
+  "default",
+  "example.echo",
+  { hello: 1 },
+  { userId: user.id },
+);
+```
+
+The worker (`npm run worker`, separate process) claims jobs and runs the
+handler registered for the job type in `scripts/worker/plan.mjs`. Rules
+(idempotency, permanent errors, new queues): [AGENTS.md](AGENTS.md) →
+"Background work = queues". Deploy/proxy/monitoring notes:
+[docs/deployment.md](docs/deployment.md).
+
 ---
 
 ## Project structure
 
 ```
 .devcontainer/
-  devcontainer.json          # Node 24 + docker-in-docker + port forwards
-  post-create.sh             # npm install (incl. Supabase CLI as dev dependency)
+  devcontainer.json          # Node 26 + docker-in-docker + port forwards
+  post-create.sh             # npm install, project_id from folder name, .env.local
   post-start.sh              # auto-starts the Supabase stack
+.claude/                     # skills, security-review gate hook
+AGENTS.md / CLAUDE.md        # agent instructions (CLAUDE.md imports AGENTS.md)
+.mcp.json                    # next-devtools, supabase (local), shadcn
 supabase/
   config.toml                # Local stack config incl. Google/Facebook OAuth
   migrations/                # SQL migrations (auto-applied)
@@ -121,11 +155,18 @@ app/
   auth/callback/route.ts     # OAuth code exchange
   auth/logout/route.ts
   app/dashboard/page.tsx     # Protected page (everything under /app requires login)
+  api/health/{live,ready}    # health endpoints
+  robots.ts, sitemap.ts      # SEO (runtime env)
   globals.css                # Tailwind v4 CSS-first config + Shadcn theme
-proxy.ts                     # Session refresh + route guard (Next 16 middleware)
-utils/supabase/              # SSR-safe browser/server clients
+proxy.ts                     # Request id, noindex, session refresh + route guard
+instrumentation.ts           # onRequestError → structured log
+utils/supabase/              # browser/server/service clients
 components/ui/               # Shadcn components
-lib/                         # Utilities + Vitest unit tests
+lib/                         # Framework-free logic + Vitest unit tests (logger, queue, nav, site)
+scripts/worker.mjs           # Background worker entry (bundled by scripts/build-worker-bundle.mjs)
+scripts/worker/              # loop, queue consumer, monitor, plan (job handlers)
+test/                        # Cross-cutting tests (client bundle guard, migrations)
+docs/deployment.md           # Proxy caching, CWV, logging & monitoring best practices
 .env.example                 # OAuth secrets for local Supabase stack
 .env.local.example           # Next.js env (local defaults prefilled)
 ```

@@ -1,29 +1,22 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { redirectToPath, safeNextPath } from "@/lib/nav";
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/app/dashboard";
+  // Never trust ?next= as-is: an absolute or protocol-relative value would
+  // turn the login flow into an open redirect.
+  const next = safeNextPath(searchParams.get("next")) ?? "/app/dashboard";
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error) {
-      const forwardedHost = request.headers.get("x-forwarded-host");
-      const isLocalEnv = process.env.NODE_ENV === "development";
-
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
-      } else {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
-    }
+    // Relative Location: no need to know (or trust x-forwarded-host for) the
+    // public origin — see lib/nav.ts.
+    if (!error) return redirectToPath(next);
   }
 
   // OAuth error — redirect to error page
-  return NextResponse.redirect(`${origin}/error`);
+  return redirectToPath("/error");
 }

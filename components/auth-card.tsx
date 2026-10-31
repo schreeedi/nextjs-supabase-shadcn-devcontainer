@@ -57,11 +57,14 @@ export function AuthCard({
   description,
   termsAction,
   alternate,
+  next,
 }: {
   title: string;
   description: string;
   termsAction: string;
   alternate: { prompt: string; label: string; href: string };
+  /** Validated post-login target, forwarded through the OAuth round trip. */
+  next?: string | null;
 }) {
   return (
     <Card className="w-full max-w-sm shadow-md">
@@ -74,6 +77,7 @@ export function AuthCard({
         {providers.map(({ id, label, Icon }) => (
           <form key={id} action={signInWithProvider}>
             <input type="hidden" name="provider" value={id} />
+            {next && <input type="hidden" name="next" value={next} />}
             <Button variant="outline" className="w-full gap-3" type="submit">
               <Icon />
               {label}

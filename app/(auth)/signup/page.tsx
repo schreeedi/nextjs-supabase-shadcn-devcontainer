@@ -1,14 +1,12 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
 import { AuthCard } from "@/components/auth-card";
+import { safeNextPath } from "@/lib/nav";
 
-export default async function SignupPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) redirect("/app/dashboard");
+// Signed-in users never get here: the proxy redirects them away
+// (utils/supabase/middleware.ts).
+export default async function SignupPage({
+  searchParams,
+}: PageProps<"/signup">) {
+  const { next } = await searchParams;
 
   return (
     <AuthCard
@@ -20,6 +18,7 @@ export default async function SignupPage() {
         label: "Log in",
         href: "/login",
       }}
+      next={safeNextPath(typeof next === "string" ? next : null)}
     />
   );
 }

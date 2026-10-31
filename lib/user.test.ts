@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getInitials, getProviderLabel } from "@/lib/user";
+import { getInitials, getProviderLabel, isOAuthProvider } from "@/lib/user";
 
 describe("getProviderLabel", () => {
   it("maps known provider ids to friendly labels", () => {
@@ -36,5 +36,18 @@ describe("getInitials", () => {
   it("returns an empty string when nothing is available", () => {
     expect(getInitials()).toBe("");
     expect(getInitials(null, null)).toBe("");
+  });
+});
+
+describe("isOAuthProvider", () => {
+  it("accepts enabled providers", () => {
+    expect(isOAuthProvider("google")).toBe(true);
+    expect(isOAuthProvider("facebook")).toBe(true);
+  });
+
+  it("rejects anything else", () => {
+    expect(isOAuthProvider("github")).toBe(false);
+    expect(isOAuthProvider(null)).toBe(false);
+    expect(isOAuthProvider("")).toBe(false);
   });
 });
