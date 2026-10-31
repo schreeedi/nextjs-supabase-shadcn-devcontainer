@@ -1,0 +1,24 @@
+# Build / generated — never Read, grep the source instead
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Lockfiles — grep, don't Read
+package-lock.json
+skills-lock.json
+
+# Generated shadcn primitives — grep the one symbol you need
+components/ui/
+
+# Supabase local state (migrations/ stays searchable)
+supabase/.branches/
+supabase/.temp/
+
+# Secrets / local-only
+.env
+.env*.local
+
+*.log
