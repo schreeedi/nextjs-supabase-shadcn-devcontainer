@@ -55,13 +55,11 @@ const providers = [
 export function AuthCard({
   title,
   description,
-  termsAction,
   alternate,
   next,
 }: {
   title: string;
   description: string;
-  termsAction: string;
   alternate: { prompt: string; label: string; href: string };
   /** Validated post-login target, forwarded through the OAuth round trip. */
   next?: string | null;
@@ -69,7 +67,10 @@ export function AuthCard({
   return (
     <Card className="w-full max-w-sm shadow-md">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">{title}</CardTitle>
+        {/* The card title is the page heading of /login and /signup. */}
+        <CardTitle>
+          <h1 className="text-2xl">{title}</h1>
+        </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
 
@@ -93,24 +94,6 @@ export function AuthCard({
           >
             {alternate.label}
           </Link>
-        </p>
-
-        <p className="pt-4 text-center text-xs text-muted-foreground">
-          By {termsAction} you agree to our{" "}
-          <a
-            href="#"
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a
-            href="#"
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            Privacy Policy
-          </a>
-          .
         </p>
       </CardContent>
     </Card>

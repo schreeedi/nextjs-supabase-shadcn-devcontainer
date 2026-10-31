@@ -6,14 +6,21 @@ import { SignedInSwitch } from "@/components/signed-in";
 import { JsonLd } from "@/components/json-ld";
 import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/site";
 import type { Metadata } from "next";
-
-export const metadata: Metadata = { alternates: { canonical: "/" } };
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  // Home: the layout's default title and description, spelled out so every
+  // public page visibly follows the same rule (AGENTS.md → SEO).
+  title: { absolute: SITE_NAME },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: { type: "website", siteName: SITE_NAME, url: "/" },
+};
 
 const features = [
   {
@@ -88,7 +95,9 @@ export default function Home() {
             {features.map((feature) => (
               <Card key={feature.title}>
                 <CardHeader>
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
+                  <CardTitle>
+                    <h2 className="text-lg">{feature.title}</h2>
+                  </CardTitle>
                   <CardDescription>{feature.description}</CardDescription>
                 </CardHeader>
               </Card>

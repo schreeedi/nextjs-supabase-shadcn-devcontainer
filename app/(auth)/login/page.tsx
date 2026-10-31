@@ -10,7 +10,6 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
     <AuthCard
       title="Welcome back"
       description="Log in to your account to continue"
-      termsAction="logging in"
       alternate={{
         prompt: "Don't have an account?",
         label: "Sign up",

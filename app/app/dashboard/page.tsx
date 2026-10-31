@@ -52,7 +52,9 @@ export default async function DashboardPage() {
         {/* Profile card */}
         <Card>
           <CardHeader>
-            <CardTitle>Your profile</CardTitle>
+            <CardTitle>
+              <h2>Your profile</h2>
+            </CardTitle>
             <CardDescription>Signed in via {providerLabel}</CardDescription>
           </CardHeader>
 
@@ -105,23 +107,37 @@ export default async function DashboardPage() {
         {/* Placeholder content card */}
         <Card>
           <CardHeader>
-            <CardTitle>Getting started</CardTitle>
+            <CardTitle>
+              <h2>Getting started</h2>
+            </CardTitle>
             <CardDescription>
               Authentication is working. Build your app from here.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>✅ Supabase SSR client configured</p>
-            <p>✅ Google OAuth connected</p>
-            <p>✅ Facebook OAuth connected</p>
-            <p>✅ Protected routes via middleware</p>
-            <p>✅ Shadcn UI components ready</p>
+            <p>
+              <span aria-hidden="true">✅</span> Supabase SSR client configured
+            </p>
+            <p>
+              <span aria-hidden="true">✅</span> Google OAuth connected
+            </p>
+            <p>
+              <span aria-hidden="true">✅</span> Facebook OAuth connected
+            </p>
+            <p>
+              <span aria-hidden="true">✅</span> Protected routes via middleware
+            </p>
+            <p>
+              <span aria-hidden="true">✅</span> Shadcn UI components ready
+            </p>
             <p>
               Your plan: <strong>{PLAN_LABELS[plan]}</strong>
             </p>
             {/* Example of a plan-gated section (lib/plan-features.ts) */}
             <PlanGate plan={plan} feature="dataExport">
-              <p>✅ Data export available</p>
+              <p>
+                <span aria-hidden="true">✅</span> Data export available
+              </p>
             </PlanGate>
           </CardContent>
         </Card>

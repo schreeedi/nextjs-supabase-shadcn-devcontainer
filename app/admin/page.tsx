@@ -52,7 +52,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Queues</CardTitle>
+          <CardTitle>
+            <h2 className="text-base">Queues</h2>
+          </CardTitle>
           <CardDescription>
             Backlog and dead jobs of the last 24 h (worker queues).
           </CardDescription>
@@ -102,7 +104,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Users</CardTitle>
+          <CardTitle>
+            <h2 className="text-base">Users</h2>
+          </CardTitle>
           <CardDescription>Page {page}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -145,12 +149,20 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           </table>
           <div className="mt-4 flex gap-4 text-sm">
             {page > 1 && (
-              <Link href={`/admin?page=${page - 1}`} prefetch={false}>
+              <Link
+                href={`/admin?page=${page - 1}`}
+                prefetch={false}
+                className="underline-offset-4 hover:underline"
+              >
                 ← Previous
               </Link>
             )}
             {users.length === PAGE_SIZE && (
-              <Link href={`/admin?page=${page + 1}`} prefetch={false}>
+              <Link
+                href={`/admin?page=${page + 1}`}
+                prefetch={false}
+                className="underline-offset-4 hover:underline"
+              >
                 Next →
               </Link>
             )}
@@ -160,7 +172,9 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Recent admin actions</CardTitle>
+          <CardTitle>
+            <h2 className="text-base">Recent admin actions</h2>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {(auditRes.data ?? []).length === 0 ? (

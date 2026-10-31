@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SignedInSwitch } from "@/components/signed-in";
+import { ModeToggle } from "@/components/mode-toggle";
 import { SITE_NAME } from "@/lib/site";
 
 // Server component without a session lookup, so pages using it can be static.
@@ -16,8 +17,9 @@ export function SiteHeader({
         <Link href="/" className="text-lg font-semibold tracking-tight">
           {SITE_NAME}
         </Link>
-        {showAuthLinks && (
-          <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-2">
+          <ModeToggle />
+          {showAuthLinks && (
             <SignedInSwitch
               signedIn={
                 <Button asChild>
@@ -39,8 +41,8 @@ export function SiteHeader({
                 </>
               }
             />
-          </nav>
-        )}
+          )}
+        </nav>
       </div>
     </header>
   );

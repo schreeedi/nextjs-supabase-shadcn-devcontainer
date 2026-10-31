@@ -2,6 +2,10 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
 import { setUserPlan, type AdminActionState } from "@/app/admin/actions";
 import { PLAN_LABELS, PLANS, type Plan } from "@/lib/plan-features";
 
@@ -16,18 +20,13 @@ export function PlanForm({ userId, plan }: { userId: string; plan: Plan }) {
       <label htmlFor="plan" className="text-sm font-medium">
         Plan
       </label>
-      <select
-        id="plan"
-        name="plan"
-        defaultValue={plan}
-        className="h-9 rounded-md border bg-background px-3 text-sm"
-      >
+      <NativeSelect id="plan" name="plan" defaultValue={plan}>
         {PLANS.map((p) => (
-          <option key={p} value={p}>
+          <NativeSelectOption key={p} value={p}>
             {PLAN_LABELS[p]}
-          </option>
+          </NativeSelectOption>
         ))}
-      </select>
+      </NativeSelect>
       <Button type="submit" size="sm" disabled={pending}>
         {pending ? "Saving…" : "Save"}
       </Button>

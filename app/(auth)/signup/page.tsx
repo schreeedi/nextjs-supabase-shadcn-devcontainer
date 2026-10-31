@@ -12,7 +12,6 @@ export default async function SignupPage({
     <AuthCard
       title="Create your account"
       description="Get started for free in seconds"
-      termsAction="signing up"
       alternate={{
         prompt: "Already have an account?",
         label: "Log in",

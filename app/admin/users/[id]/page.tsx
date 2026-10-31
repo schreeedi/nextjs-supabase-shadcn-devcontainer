@@ -70,7 +70,9 @@ export default async function AdminUserPage({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">{user.email ?? user.id}</CardTitle>
+          <CardTitle>
+            <h1 className="text-base">{user.email ?? user.id}</h1>
+          </CardTitle>
           <CardDescription className="font-mono text-xs">
             {user.id}
           </CardDescription>
@@ -100,7 +102,9 @@ export default async function AdminUserPage({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Jobs</CardTitle>
+          <CardTitle>
+            <h2 className="text-base">Jobs</h2>
+          </CardTitle>
           <CardDescription>
             Last 20 background jobs of this user.
           </CardDescription>
@@ -143,8 +147,8 @@ export default async function AdminUserPage({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">
-            Admin actions on this user
+          <CardTitle>
+            <h2 className="text-base">Admin actions on this user</h2>
           </CardTitle>
         </CardHeader>
         <CardContent>
