@@ -1,0 +1,67 @@
+# Dependabot: weekly, grouped update PRs. Run `npm run check && npm run build`
+# on the branch before merging (there is no CI in this template).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Berlin
+    open-pull-requests-limit: 8
+    # Bump the ^range in package.json too, not just the lockfile.
+    versioning-strategy: increase
+    labels:
+      - dependencies
+    commit-message:
+      prefix: deps
+      prefix-development: deps-dev
+    # Order matters: a package lands in the FIRST matching group.
+    groups:
+      react:
+        patterns:
+          - react
+          - react-dom
+          - "@types/react"
+          - "@types/react-dom"
+      next:
+        patterns:
+          - next
+          - eslint-config-next
+          - "@next/*"
+      radix:
+        patterns:
+          - "@radix-ui/*"
+      tailwind:
+        patterns:
+          - tailwindcss
+          - "@tailwindcss/*"
+          - prettier-plugin-tailwindcss
+          - tw-animate-css
+      supabase:
+        patterns:
+          - "@supabase/*"
+          - supabase
+      # Everything else: minor + patch in ONE PR. Majors come as single PRs —
+      # on purpose, so they get attention.
+      minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # Framework majors never automatically — by hand, with the migration guide.
+      - dependency-name: react
+        update-types: [version-update:semver-major]
+      - dependency-name: react-dom
+        update-types: [version-update:semver-major]
+      - dependency-name: next
+        update-types: [version-update:semver-major]
+      # @types/node follows the Node major of the devcontainer image.
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
+      # TypeScript 7 (Go port) is not supported by typescript-eslint yet.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
