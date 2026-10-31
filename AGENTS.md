@@ -7,14 +7,13 @@ Starter: Next.js 16 + local Supabase (Docker via CLI) + shadcn/ui, OAuth login
 
 ## Where things live (don't copy it here)
 
-| Topic                                                             | File                                               |
-| ----------------------------------------------------------------- | -------------------------------------------------- |
-| Setup, local Supabase, OAuth, `.env`, useful commands             | [README.md](README.md)                             |
-| Deploy, proxy caching, CWV, logging/monitoring                    | [docs/deployment.md](docs/deployment.md)           |
-| Why things are built this way (decisions + rejected alternatives) | [docs/adr/](docs/adr/README.md)                    |
-| Open work (not in code comments)                                  | [ROADMAP.md](ROADMAP.md)                           |
-| Audit checklist (Next/Supabase/shadcn, reusable for other repos)  | [docs/audit-checklist.md](docs/audit-checklist.md) |
-| <!-- add rows as docs appear: roadmap, decisions, … -->           |                                                    |
+| Topic                                                             | File                                     |
+| ----------------------------------------------------------------- | ---------------------------------------- |
+| Setup, local Supabase, OAuth, `.env`, useful commands             | [README.md](README.md)                   |
+| Deploy, proxy caching, CWV, logging/monitoring                    | [docs/deployment.md](docs/deployment.md) |
+| Why things are built this way (decisions + rejected alternatives) | [docs/adr/](docs/adr/README.md)          |
+| Open work (not in code comments)                                  | [ROADMAP.md](ROADMAP.md)                 |
+| <!-- add rows as docs appear: roadmap, decisions, … -->           |                                          |
 
 Keep this file short: rules and pointers. Details go into the linked docs.
 
